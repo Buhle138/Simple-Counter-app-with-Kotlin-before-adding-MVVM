@@ -14,29 +14,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.counterapp.ui.theme.CounterAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            /*Declaring the viewModel() object so that we can pass it onto the Counter funt*/
+            val viewModel : CounterViewModel = viewModel()
             CounterAppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
-
+                    Counter(viewModel)
                 }
             }
         }
@@ -44,14 +42,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Counter(viewModel: CounterViewModel, modifier: Modifier = Modifier) {
 
- var count by remember { mutableStateOf(0)}
-
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
   Column (
       modifier = modifier.fillMaxSize(),
       verticalArrangement = Arrangement.Center
@@ -63,7 +55,8 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
               .padding(8.dp),
           horizontalArrangement = Arrangement.Center
       ){
-          Text("Count: ${count}", fontWeight = FontWeight.Bold, fontSize = 30.sp)
+          /*We are saying .dot value because we didn't use the by keyword.*/
+          Text("Count: ${viewModel.count.value}", fontSize = 24.sp, fontWeight = FontWeight.Bold)
       }
 
       Row(
@@ -73,26 +66,15 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
           Button(
               modifier = modifier.padding(8.dp),
-              onClick = {
-                  count = count + 1
-              }) {
+              onClick = { viewModel.increment() }) {
               Text("Increment")
           }
           Button(
               modifier = modifier.padding(8.dp),
-              onClick = {
-                  count = count - 1
-              }) {
+              onClick = { viewModel.decrement() }) {
               Text("Decrement")
           }
       }
   }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CounterAppTheme {
-        Greeting("Androidz")
-    }
-}
